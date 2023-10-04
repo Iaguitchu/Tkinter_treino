@@ -67,7 +67,7 @@ class Funsc():
         
         self.conn.commit()
         self.desconecta_bd()
-        self.select_lista()
+
         self.limpa_tela()
         
     def select_lista(self):
@@ -227,7 +227,7 @@ class Application(Funsc):
         menubar.add_cascade(label = "Opções", menu = filemenu)
         menubar.add_cascade(label = "Sobre", menu = filemenu2)
         filemenu.add_command(label = 'sair', command= Quit)
-        filemenu2.add_command(label = 'Limpar cliente', command= self.limpa_tela)
+        filemenu.add_command(label = 'Limpar cliente', command= self.limpa_tela)
 
         
         
