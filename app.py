@@ -22,7 +22,7 @@ class Funsc():
 
     def montaTabelas(self):
 
-    def OnDoubleClick(self):
+
         self.limpa_tela
         self.conectar_bd(); print('Conectando o banco de dados')
 
@@ -38,13 +38,26 @@ class Funsc():
         
         self.conn.commit(); 
         self.desconecta_bd()
-                            
-    def addcliente(self):
+
+    def variaveis(self):
         self.codigo = self.codigo_entry.get()
         self.nome = self.nome_entry.get()
         self.cidade = self.cidade_entry.get()
         self.telefone = self.fone_entry.get()
         self.conectar_bd()
+
+    def OnDoubleClick(self, event):
+        self.limpa_tela()
+
+        for n in self.listaCli.selection():
+            col1, col2, col3, col4 = self.listaCli.item(n, 'values')
+            self.codigo_entry.insert(END, col1)
+            self.nome_entry.insert(END, col2)
+            self.fone_entry.insert(END, col3)
+            self.cidade_entry.insert(END, col4)
+
+    def addcliente(self):
+        self.variaveis()
         
 
         self.cursor.execute('''
@@ -66,7 +79,27 @@ class Funsc():
         
         for i in lista:
             self.listaCli.insert('', END, values = i)
-            self.desconecta_bd()
+        self.desconecta_bd()
+
+    def deleta_cliente(self):
+        self.variaveis()
+        self.conectar_bd()
+        self.cursor.execute('''DELETE FROM clientes where cod = ? ''', (self.codigo,))
+        self.conn.commit()
+        self.desconecta_bd()
+        self.limpa_tela()
+        self.select_lista()
+
+    def altera_cliente(self):
+        self.variaveis()
+        self.conectar_bd()
+        self.cursor.execute("""UPDATE clientes SET nome_cliente = ?, telefone = ?, cidade = ? 
+                            where cod = ?""",(self.nome, self.telefone, self.cidade, self.codigo))
+        
+        self.conn.commit()
+        self.desconecta_bd()
+        self.select_lista()
+        self.limpa_tela()
 
 class Application(Funsc):
     def __init__(self):
@@ -77,6 +110,7 @@ class Application(Funsc):
         self.lista_frame2()
         self.montaTabelas()
         self.select_lista()
+        self.Menus()
 
         root.mainloop()
         
@@ -120,12 +154,12 @@ class Application(Funsc):
 
 
         self.bt_alterar = Button(self.frame_1, text = 'Alterar', bd = 2, bg = '#14838f', fg = 'white',
-                                font = ('verdana', 8,'bold'))
+                                font = ('verdana', 8,'bold'), command = self.altera_cliente)
         self.bt_alterar.place(relx = 0.7, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
 
         self.bt_apagar = Button(self.frame_1, text = 'Apagar', bd = 2, bg = '#14838f', fg = 'white',
-                                font = ('verdana', 8,'bold'))
+                                font = ('verdana', 8,'bold'), command= self.deleta_cliente)
         self.bt_apagar.place(relx = 0.8, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
 
@@ -141,7 +175,7 @@ class Application(Funsc):
                              font=('verdana', 8, 'bold'))
         self.lb_nome.place(relx = 0.05, rely = 0.4 )
         self.nome_entry = Entry(self.frame_1)
-        self.nome_entry.place(relx = 0.05, rely = 0.48, relwidth= 0.35)
+        self.nome_entry.place(relx = 0.05, rely = 0.48, relwidth= 0.60)
 
         #Criação de Label Telefone
         self.lbfone = Label(self.frame_1, text = 'Telefone', bg = '#d3e3e1', fg = '#14838f',
@@ -180,6 +214,22 @@ class Application(Funsc):
         self.scrooLista = Scrollbar(self.frame_2, orient= 'vertical')
         self.listaCli.configure(yscroll = self.scrooLista.set)
         self.scrooLista.place(relx= 0.96, rely= 0.01, relwidth= 0.04, relheight= 0.85)
+        self.listaCli.bind('<Double-1>', self.OnDoubleClick)
 
+    def Menus(self):
+        menubar = Menu(self.root)
+        self.root.config(menu = menubar)
+        filemenu = Menu(menubar)
+        filemenu2 = Menu(menubar)
+        
+        def Quit(): self.root.destroy()
+
+        menubar.add_cascade(label = "Opções", menu = filemenu)
+        menubar.add_cascade(label = "Sobre", menu = filemenu2)
+        filemenu.add_command(label = 'sair', command= Quit)
+        filemenu2.add_command(label = 'Limpar cliente', command= self.limpa_tela)
+
+        
+        
 
 Application()
