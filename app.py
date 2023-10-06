@@ -18,9 +18,8 @@ class Application(Funsc, Relatorios):
         self.montaTabelas()
         self.select_lista()
         self.Menus()
-
-        root.mainloop()
         
+        root.mainloop()
     
     def tela(self):
         self.root.title("Cadastro de Clientes")
@@ -54,8 +53,8 @@ class Application(Funsc, Relatorios):
                                 font = ('verdana', 8,'bold'), command= self.busca_cliente)
         self.bt_buscar.place(relx = 0.3, rely= 0.1, relwidth= 0.1, relheight= 0.15)
 
-        # self.balao_buscar = tix.Balloon(self.frame_1)
-        # self.balao_buscar.bind_widget()
+        self.balao_buscar = tix.Balloon(self.frame_1)
+        self.balao_buscar.bind_widget(self.bt_buscar, balloonmsg = 'Digite o nome do cliente que deseja pesquisar')
 
 
         self.bt_novo = Button(self.frame_1, text = 'Novo', bd = 2, bg = '#14838f', fg = 'white',
